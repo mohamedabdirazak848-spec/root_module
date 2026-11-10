@@ -17,7 +17,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     defaults:
       run:
-        working-directory: root_module
+        working-directory: .
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -85,7 +85,7 @@ jobs:
    
     - name: Terratest Execution
       if: github.event_name == 'pull_request' 
-      working-directory: root_module
+      working-directory: .
       run:
         go test . -v -timeout 10m
     
@@ -110,14 +110,14 @@ jobs:
     
     - name: Terraform Apply Global
       if: github.event_name == 'push' || github.event_name == 'release'
-      working-directory: root_module/terraform.tfstate.d/global
+      working-directory: terraform.tfstate.d/global
       run: |
         terraform init
         terraform apply -auto-approve
   
     - name: Terraform Apply Staging
       if: steps.check-tag.outputs.environment == 'staging' && github.event_name == 'push'
-      working-directory: root_module/terraform.tfstate.d/staging
+      working-directory: terraform.tfstate.d/staging
       run: |
         terraform init
         terraform apply  -auto-approve
@@ -125,7 +125,7 @@ jobs:
   
     - name: Terraform Apply Production
       if: steps. check-tag.outputs.environment == 'production' && github.event_name == 'release' 
-      working-directory: root_module/terraform.tfstate.d/production
+      working-directory: terraform.tfstate.d/production
       run: |
         terraform init
         terraform apply  -auto-approve
